@@ -183,6 +183,9 @@ leading to fragile and hard to support programs.
 """
 
 from collections import Iterable,Sequence,Mapping
+import sys
+
+integer_types = (int, long) if sys.version_info < (3,) else (int,)
 
 class ADT(object):
     """Algebraic Data Type.
@@ -206,17 +209,19 @@ class ADT(object):
 
     def __repr__(self):
         def qstr(x):
-            if isinstance(x, (int)):
+            if isinstance(x, integer_types):
                 return '0x{0:x}'.format(x)
             elif isinstance(x, ADT):
                 return str(x)
             elif isinstance(x, tuple):
-                return "(" + ", ".join(qstr(i) for i in x) + ")"
+                return "(" + ",".join(qstr(i) for i in x) + ")"
+            elif isinstance(x, list):
+                return "[" + ",".join(qstr(i) for i in x) + "]"
             else:
-                return '"{0}"'.format(x)
+                return '"' + repr(x)[1:-1] + '"'
         def args():
             if isinstance(self.arg, tuple):
-                return ", ".join(qstr(x) for x in self.arg)
+                return ",".join(qstr(x) for x in self.arg)
             else:
                 return qstr(self.arg)
 
